@@ -5,11 +5,7 @@
         {{ lang.dock.recommendTitle }}
       </div>
       <div class="recommend-theme__flex">
-        <div
-          v-for="(theme, themeIdx) in type.options"
-          :key="themeIdx"
-          @click="generateNewTheme(theme)"
-        >
+        <div v-for="(theme, themeIdx) in type.options" :key="themeIdx" @click="generateNewTheme(theme)">
           <div
             class="recommend-theme__flex-theme"
             :style="{
@@ -17,10 +13,7 @@
             }"
           >
             <div v-html="theme.subtitle" />
-            <div
-              v-if="currentTheme && currentTheme.value === theme.value"
-              class="recommend-theme__flex-theme--active"
-            >
+            <div v-if="currentTheme && currentTheme.value === theme.value" class="recommend-theme__flex-theme--active">
               <picked-svg />
             </div>
           </div>
@@ -35,19 +28,45 @@
             {{ isEn ? theme.enName : theme.name }}
           </p>
         </div>
+
+        <t-upload :requestMethod="requestMethod" @success="onUploadSuccess" theme="custom">
+          <div
+            class="recommend-theme__flex-theme"
+            :style="{
+              'background-color': defaultTheme.value,
+              display: 'flex',
+              'justify-content': 'center',
+              'align-items': 'center',
+            }"
+          >
+            <add-rectangle />
+          </div>
+          <p
+            :style="{
+              margin: '4px 0',
+              'text-align': 'center',
+              'font-size': '12px',
+              'line-height': '20px',
+            }"
+          >
+            自定义Theme
+          </p>
+        </t-upload>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import { RECOMMEND_THEMES } from "./const";
-import { generateNewTheme } from "../utils";
-import PickedSvg from "./PickedSvg.vue";
-import langMixin from "../i18n/mixin";
+import { RECOMMEND_THEMES, defaultTheme } from './const';
+import { generateNewTheme } from '../utils';
+import PickedSvg from './svg/PickedSvg.vue';
+import AddRectangle from './svg/AddRectangle.vue';
+import langMixin from '../i18n/mixin';
+import { Upload } from 'tdesign-vue';
 
 export default {
-  emit: ["changeTabTheme"],
+  emit: ['changeTabTheme'],
   props: {
     currentTheme: Object,
   },
@@ -55,17 +74,44 @@ export default {
   data() {
     return {
       recommendThemes: RECOMMEND_THEMES,
+      defaultTheme,
       isThemeTabVisible: false,
       isDrawerVisible: false,
+      uploadMethod: 'requestSuccessMethod',
     };
   },
   components: {
     PickedSvg,
+    AddRectangle,
+    TUpload: Upload,
   },
   methods: {
     generateNewTheme(theme) {
       generateNewTheme(theme.value);
-      this.$emit("changeTabTheme", theme);
+      this.$emit('changeTabTheme', theme);
+    },
+    requestMethod(file) {
+      return new Promise((resolve) => {
+        if (file.type !== 'text/css') {
+          resolve({ status: 'error', response: { files: [] } });
+        }
+        resolve({
+          status: 'success',
+          response: { files: [file] },
+        });
+      });
+    },
+    onUploadSuccess(content) {
+      console.log(content);
+      const reader = new FileReader();
+      reader.readAsText(content.file.raw);
+      reader.onload = (e) => {
+        const css = e.target.result;
+        const style = document.getElementById('custom-theme');
+        if (style) {
+          style.innerText = css;
+        }
+      };
     },
   },
 };
@@ -139,6 +185,7 @@ export default {
       border-radius: 12px;
       position: relative;
       overflow: hidden;
+
       &--active {
         position: absolute;
         right: 0px;
@@ -147,5 +194,4 @@ export default {
     }
   }
 }
-
 </style>

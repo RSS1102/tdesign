@@ -9,5 +9,7 @@ module.exports = {
       configFile: path.resolve(__dirname, './babel.config.js'),
     },
   },
-  rules: {},
+  rules: {
+    'vue/multi-word-component-names': 'off',
+  },
 };

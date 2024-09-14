@@ -19,7 +19,7 @@
   },
   "[javascript]": {
     "editor.formatOnSave": true,
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
+    "editor.defaultFormatter": "vscode.typescript-language-features"
   },
   "cSpell.words": ["tdesign","miniprogram"],
   "cSpell.ignorePaths": ["pnpm-lock.yaml", "node_modules", ".git", ".vscode"]
