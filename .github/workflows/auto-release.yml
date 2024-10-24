@@ -12,13 +12,13 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
+          # https://nodejs.org/en/learn/typescript/run-natively#running-typescript-code-with-nodejs
           node-version: "22.6.0"
-        # https://nodejs.org/en/learn/typescript/run-natively#running-typescript-code-with-nodejs
+      - name: Install Dependencies
+        run: npm install @types/node @actions/github
       - name: run JavaScript
         env:
-          GITHUB_TOKEN: ${{ secrets.AUTO_RELEASE_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.PERSONAL_TOKEN }}
         run: |
           git submodule update --init --remote
-          npm install @types/node @actions/github
-          
           node --experimental-strip-types scripts/auto-release.ts
