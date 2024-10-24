@@ -1,0 +1,24 @@
+on:
+  # schedule:
+  #   - cron: '30 11 * * *'
+  push:
+
+jobs:
+  test_schedule:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22.6.0"
+        # https://nodejs.org/en/learn/typescript/run-natively#running-typescript-code-with-nodejs
+      - name: run JavaScript
+        env:
+          GITHUB_TOKEN: ${{ secrets.AUTO_RELEASE_TOKEN }}
+        run: |
+          git submodule update --init --remote
+          npm install @types/node @actions/github
+          
+          node --experimental-strip-types scripts/auto-release.ts
